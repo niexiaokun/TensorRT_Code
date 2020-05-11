@@ -24,8 +24,8 @@ static samplesCommon::Args gArgs;
 // Network details
 const char* gNetworkName = "ssd";       // Network name
 static const int kINPUT_C = 3;          // Input image channels
-static const int kINPUT_H = 512;        // Input image height
-static const int kINPUT_W = 512;        // Input image width
+static const int kINPUT_H = 300;        // Input image height
+static const int kINPUT_W = 300;        // Input image width
 static const int kOUTPUT_CLS_SIZE = 21; // Number of classes
 static const int kKEEP_TOPK = 200;      // Number of total bboxes to be kept per image after NMS step. It is same as detection_output_param.keep_top_k in prototxt file
 
@@ -392,8 +392,8 @@ int main(int argc, char** argv)
 
     const int N = 1; // Batch size
 
-    caffeToTRTModel("../models/ssd512/ssd512.prototxt",
-                    "../models/ssd512/VGG_VOC0712Plus_SSD_512x512_ft_iter_160000.caffemodel",
+    caffeToTRTModel("../models/mobilenet-ssd/mobilenet-ssd.prototxt",
+                    "../models/mobilenet-ssd/mobilenet-ssd.caffemodel",
                     std::vector<std::string>{kOUTPUT_BLOB_NAME0, kOUTPUT_BLOB_NAME1},
                     N, params.modelType, &trtModelStream);
 
@@ -428,7 +428,8 @@ int main(int argc, char** argv)
             for(int h=0; h<kINPUT_H; h++){
                 uchar* p = frame.ptr<uchar>(h);
                 for(int w=0; w<kINPUT_W; w++){
-                    data[c*kINPUT_H*kINPUT_W+h*kINPUT_W+w] = float(p[w*kINPUT_C+c]) - pixelMean[c];
+//                    data[c*kINPUT_H*kINPUT_W+h*kINPUT_W+w] = float(p[w*kINPUT_C+c]) - pixelMean[c];
+                    data[c*kINPUT_H*kINPUT_W+h*kINPUT_W+w] = float(p[w*kINPUT_C+c] - 127.5) / 127.5;
                 }
             }
         }
@@ -446,7 +447,6 @@ int main(int argc, char** argv)
                 if (det[2] < kVISUAL_THRESHOLD)
                     continue;
                 assert((int) det[1] < kOUTPUT_CLS_SIZE);
-                std::string storeName = gCLASSES[(int) det[1]] + "-" + std::to_string(det[2]) + ".ppm";
 
                 numDetections++;
                 if (gCLASSES[(int) det[1]] == "car")
