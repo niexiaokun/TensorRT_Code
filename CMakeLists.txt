@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.0)
 project(TRT_Demo)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")	# -std=gnu++11
@@ -10,6 +10,7 @@ set(
         CUDA_NVCC_FLAGS
         ${CUDA_NVCC_FLAGS};
         -O3
+        -gencode arch=compute_50,code=sm_50  #gtx 750ti
         -gencode arch=compute_53,code=sm_53  #tegra tx1
         -gencode arch=compute_61,code=sm_61  #gtx 1060
         -gencode arch=compute_62,code=sm_62  #tegra tx2
@@ -27,6 +28,7 @@ endif()
 
 find_package(OpenCV REQUIRED)
 
+#set(TRT_DIR /home/kun/TensorRT-5.1.2.2)
 set(TRT_DIR /home/kun/TensorRT-5.1.5.0)
 
 include_directories(common)

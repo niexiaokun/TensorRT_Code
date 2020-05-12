@@ -392,8 +392,8 @@ int main(int argc, char** argv)
 
     const int N = 1; // Batch size
 
-    caffeToTRTModel("../models/mobilenet-ssd/mobilenet-ssd.prototxt",
-                    "../models/mobilenet-ssd/mobilenet-ssd.caffemodel",
+    caffeToTRTModel("../models/ssd300/ssd300.prototxt",
+                    "../models/ssd300/VGG_VOC0712Plus_SSD_300x300_ft_iter_160000.caffemodel",
                     std::vector<std::string>{kOUTPUT_BLOB_NAME0, kOUTPUT_BLOB_NAME1},
                     N, params.modelType, &trtModelStream);
 
@@ -412,7 +412,7 @@ int main(int argc, char** argv)
     float* detectionOut = new float[N * kKEEP_TOPK * 7];
     int* keepCount = new int[N];
 
-    cv::VideoCapture cap("/home/kun/dataset/videos/ADAS_Video-20191120-151849.mp4");
+    cv::VideoCapture cap("Video-20191120-151849.mp4");
 
     cv::Mat frame;
 
@@ -428,8 +428,8 @@ int main(int argc, char** argv)
             for(int h=0; h<kINPUT_H; h++){
                 uchar* p = frame.ptr<uchar>(h);
                 for(int w=0; w<kINPUT_W; w++){
-//                    data[c*kINPUT_H*kINPUT_W+h*kINPUT_W+w] = float(p[w*kINPUT_C+c]) - pixelMean[c];
-                    data[c*kINPUT_H*kINPUT_W+h*kINPUT_W+w] = float(p[w*kINPUT_C+c] - 127.5) / 127.5;
+                    data[c*kINPUT_H*kINPUT_W+h*kINPUT_W+w] = float(p[w*kINPUT_C+c]) - pixelMean[c];
+//                    data[c*kINPUT_H*kINPUT_W+h*kINPUT_W+w] = float(p[w*kINPUT_C+c] - 127.5) / 127.5;
                 }
             }
         }
